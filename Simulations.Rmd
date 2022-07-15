@@ -1,0 +1,346 @@
+---
+title: "Simulations"
+author: "Hadrien Lorenzo"
+date: "10/09/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ddsPLS2)
+library(missMDA)
+source("functions0.R")
+source('~/Documents/GitHub/Koh_Lanta/kohLanta2_fun.R')
+source('~/Documents/GitHub/Koh_Lanta/MI_PLS.R')
+
+## Koh-Lanta
+load("../data/Simus/KohLantaVSNipals/Design1/ddsPLS.RData")
+# save(df,sel_Y,R_pred,rmseStdS,paras,file="../data/Simus/KohLantaVSNipals/Design1/ddsPLS.RData")
+ddspls_1_df1 <- cbind("ddsPLS",df)
+names(ddspls_1_df1) <- c("method",names(df))
+load("../data/Simus/KohLantaVSNipals/Design1/ddsPLS2.RData")
+# save(df,sel_Y,R_pred,rmseStdS,paras,file="../data/Simus/KohLantaVSNipals/Design1/ddsPLS2.RData")
+ddspls_1_df2 <- cbind("ddsPLS",df)
+names(ddspls_1_df2) <- c("method",names(df))
+ddspls_1_df <- rbind(ddspls_1_df1)#,ddspls_1_df2)
+
+## MULTIPLE IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS.RData")
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS2.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS.RData")
+miPLS_1_df1 <- data.frame(cbind("MI-NIPALS",df))
+names(miPLS_1_df1) <- c("method",names(df))
+load("../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS2.RData")
+miPLS_1_df2 <- data.frame(cbind("MI-NIPALS",df))
+names(miPLS_1_df2) <- c("method",names(df))
+miPLS_1_df <-  rbind(miPLS_1_df1)#,miPLS_1_df2)
+
+
+## SIMPLE IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS.RData")
+pls_1_df1 <- data.frame(cbind("NIPALS",df))
+names(pls_1_df1) <- c("method",names(df))
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS2.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS2.RData")
+pls_1_df2 <- data.frame(cbind("NIPALS",df))
+names(pls_1_df2) <- c("method",names(df))
+pls_1_df <- rbind(pls_1_df1)#,pls_1_df2)
+
+
+## MEAN IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS.RData")
+meamPLS_1_df1 <- data.frame(cbind("MEAN-NIPALS",df))
+names(meamPLS_1_df1) <- c("method",names(df))
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS2.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS2.RData")
+meamPLS_1_df2 <- data.frame(cbind("MEAN-NIPALS",df))
+names(meamPLS_1_df2) <- c("method",names(df))
+meamPLS_1_df <- rbind(meamPLS_1_df1)#,meamPLS_1_df2)
+
+all_1_df <- rbind(ddspls_1_df,miPLS_1_df,pls_1_df,meamPLS_1_df)
+all_1_df[,2] <- as.numeric(all_1_df[,2])
+all_1_df[,4] <- as.numeric(all_1_df[,4])
+cols <- RColorBrewer::brewer.pal(8,"Set1")
+cols[6] <- "brown"
+angle <- c(-45,45,90,-35)
+density <- c(30,35,40,45)
+
+source('~/Documents/GitHub/Koh_Lanta/plot_ddspls_nipals_1.R')
+
+```
+
+## First design of simulations
+
+The first design considers 
+\begin{equation}
+\begin{array}{c c c}
+\mathbf{A} =\sqrt{1-\sigma^2}
+\left(\begin{array}{ccc}
+\alpha_3\boldsymbol{1}_{3,50} & \boldsymbol{0}_{3,50} &  \boldsymbol{0}_{3,900}\\
+\boldsymbol{0}_{2,50} & \alpha_2\boldsymbol{1}_{2,50} & \boldsymbol{0}_{2,900}\\
+\end{array} \right)_{(5,1000)}
+&\text{ and }&
+\mathbf{D}=\sqrt{1-\sigma^2}
+\left(\begin{array}{ccc}
+\alpha_3\boldsymbol{1}_{3,1} & \boldsymbol{0}_{3,1} & \boldsymbol{0}_{3,1} \\ 
+\boldsymbol{0}_{2,1} & \alpha_2\boldsymbol{1}_{2,1} & \boldsymbol{0}_{2,1} \\
+\end{array} \right)_{(5,3)},
+\end{array}
+\label{equ:design_1}
+\end{equation}
+where $\forall k \in \mathbb{N}^\star, \ \alpha_k=1/\sqrt{k}$, $\sqrt{1-\sigma^2}=0.99$ and 
+$$\boldsymbol{\psi}=(\boldsymbol{\phi}',\boldsymbol{\epsilon}'_{1\dots100}/\sigma,
+\boldsymbol{\epsilon}'_{101\dots1000},\boldsymbol{\xi}'_{1\dots2}/\sigma,\xi_{3})'\sim \mathcal{N}\left(\mathbf{0},\mathbb{I}_{5+1000+3}\right).$$
+The corresponding latent variable model is then:
+\begin{equation}
+\begin{array}{ccc}
+x_j=\left\{\begin{array}{rcl}
+\sqrt{1-\sigma^2}(\phi_1+\phi_2+\phi_3)/\sqrt{3}+\epsilon_j&\text{ for } & j=1\ldots 50 \\
+\sqrt{1-\sigma^2}(\phi_4+\phi_5)/\sqrt{2}+\epsilon_j&\text{ for } & j=51\ldots 100 \\ 
+\epsilon_j&\text{ for } & j=101\ldots 1000 \\ 
+\end{array}\right.
+&\text{ and }&
+\left\{\begin{array}{l}
+y_1=\sqrt{1-\sigma^2}(\phi_1+\phi_2+\phi_3)/\sqrt{3}+\xi_1\\
+y_2=\sqrt{1-\sigma^2}(\phi_4+\phi_5)/\sqrt{2}+\xi_2\\ 
+y_3=\xi_3 
+\end{array}\right.
+\end{array}
+\end{equation}
+
+## MCAR
+
+```{r,echo=F,eval=F}
+n <- 100
+sqrt_1_minus_sig2 <- 0.9
+
+p1 <- 10
+p <- 2000
+q <- 3
+n_test <- 1000
+props <- c(0,0.1,0.25,0.4,0.6)
+nNAs <- round(n*p*props)
+N_simus <- 10
+id_simus <- 1:N_simus
+B <- 20
+M <- 5
+R_max <- 5
+paras <- expand.grid(nNAs,id_simus,B,M,n,p,q,1,sqrt_1_minus_sig2,n_test)
+colnames(paras) <- c("nNA","id","B","M","n","p","q","design","sqrt_1_minus_sig2","n_test")
+
+set.seed(1)
+data_test <- get_design_1_na(n_test,sqrt_1_minus_sig2,p,p1 = p1,q,0)
+rmseStdS <- matrix(NA,nrow(paras),q)
+R_pred <- NULL
+sel_X <- NULL
+sel_Y <- NULL
+errMin <- 1e-7
+
+
+ID_BATCH <- 1
+
+dev.new()
+
+ids <- as.numeric(rownames(ddspls_1_df[which(ddspls_1_df$nNA==120000),]))
+
+for(i in ids){#1:nrow(paras)){
+  cat(i);cat(" | ")
+  pa <- paras[i,]
+  nNA <- pa[1]
+  set.seed(i+N_simus*(ID_BATCH-1))
+  data <- get_design_1_na(n,sqrt_1_minus_sig2,p,p1,q,as.numeric(nNA))
+  
+  # Koh-Lanta
+  res <- KohLanta(data$X,data$Y,B = B,M = M,verbose=T)
+  est <- predict(res,data_test$X)
+  R_pred[[i]] <- res$R$Prediction
+  sel_X[[i]] <- unlist(lapply(res$models,function(ll){ll$Selection$X}))
+  sel_Y[[i]] <- unlist(lapply(res$models,function(ll){ll$Selection$Y}))
+  
+  ## MI PLS
+  # models <- MI_PLS(data$X,data$Y,R=R_max,M=M,proper = T,errMin = errMin)
+  # est <- list(est=predict_MI_PLS(models,data_test$X))
+  # R_pred[[i]] <- lapply(models,function(mm){mm$R})
+  
+  # ## I PLS
+  # models <- MI_PLS(data$X,data$Y,R=R_max,M=1,proper=F,errMin=errMin)
+  # est <- list(est=predict_MI_PLS(models,data_test$X))
+  # R_pred[[i]] <- lapply(models,function(mm){mm$R})
+  
+  ## MEAN PLS
+  # x_mean <- data$X
+  # mus_x <- colMeans(x_mean,na.rm = T)
+  # idNA <- which(is.na(data$X),arr.ind = T)
+  # idNAii <- which(is.na(data$X),arr.ind = F)
+  # x_mean[idNAii] <- mus_x[idNA[,2]]
+  # models <- MI_PLS(x_mean,data$Y,R=R_max,M=1,proper = F,errMin = errMin)
+  # est <- list(est=predict_MI_PLS(models,data_test$X))
+  # R_pred[[i]] <- lapply(models,function(mm){mm$R})
+  
+  ## missMDA
+  ncomp <- estim_ncpPCA(data$X, ncp.min = 0, ncp.max = 5,verbose = T)
+  res.imp <- imputePCA(geno, ncp = 2, scale = TRUE,method = "Regularized", row.w = NULL, coeff.ridge = 1,threshold = 1e-06, seed = NULL, nb.init = 1, maxiter = 1000)
+  
+  rmseStdS[i,] <- sqrt(colMeans((est$est-data_test$Y)^2))/apply(data_test$Y,2,sd)
+  
+  df <- data.frame(list(nNA=rep(paras[,1],q),y_j=unlist(lapply(1:q,function(jj){rep(paste("y",jj),length(paras[,1]))})),rmseSTD=as.vector(rmseStdS)))
+  # par(mfrow=c(1,3))
+  boxplot(rmseSTD~nNA,df[which(df$y_j=="y 1"),])
+  # boxplot(rmseSTD~nNA,df[which(df$y_j=="y 2"),])
+  # boxplot(rmseSTD~nNA,df[which(df$y_j=="y 3"),])
+}
+
+```
+
+```{r,echo=F,fig.width=5,fig.height=1.5}
+postscript("~/Documents/GitHub/Koh_Lanta/nipasl_ddsPLS_1.eps",
+           onefile=TRUE, horizontal=F,width=9, height=2.5,pointsize=3)
+plot_1()
+dev.off()
+
+```
+
+## MNAR
+
+```{r,echo=F}
+n <- 100
+sqrt_1_minus_sig2 <- 0.99
+p <- 300
+q <- 3
+n_test <- 1000
+quantiles <- c(0.1,1,10)
+d <- 100
+xx <- rnorm(1e5)
+ths <- c(-3.1434578060861,-2.35185906809072,-1.27897347797873)#sort(xx)[length(xx)*quantiles/d]
+N_simus <- 20
+id_simus <- 1:N_simus
+B <- 20
+M <- 5
+R_max <- 5
+paras <- expand.grid(ths,id_simus,B,M,n,p,q,1,sqrt_1_minus_sig2,n_test)
+colnames(paras) <- c("th","id","B","M","n","p","q","design","sqrt_1_minus_sig2","n_test")
+set.seed(1)
+data_test <- get_design_1_na_MNAR(n_test,sqrt_1_minus_sig2,p,q,threshold = NA)
+rmseStdS <- matrix(NA,nrow(paras),q)
+R_pred <- NULL
+sel_X <- NULL
+sel_Y <- NULL
+
+
+ID_BATCH <- 1
+
+
+for(i in 1:nrow(paras)){
+  cat(i);cat(" | ")
+  pa <- paras[i,]
+  th <- pa[1]
+  set.seed(i+N_simus*(ID_BATCH-1))
+  data <- get_design_1_na_MNAR(n,sqrt_1_minus_sig2,
+                          p,q,threshold = th)
+  ## Koh-Lanta
+  # res <- KohLanta(data$X,data$Y,B = B,M = M,verbose=T)
+  # est <- predict(res,data_test$X)
+  # R_pred[[i]] <- res$R$Prediction
+  # sel_X[[i]] <- unlist(lapply(res$models,function(ll){ll$Selection$X}))
+  # sel_Y[[i]] <- unlist(lapply(res$models,function(ll){ll$Selection$Y}))
+  
+  ## MI PLS
+  models <- MI_PLS(data$X,data$Y,R=R_max,M=M,proper = T,errMin = errMin)
+  est <- list(est=predict_MI_PLS(models,data_test$X))
+  R_pred[[i]] <- lapply(models,function(mm){mm$R})
+    
+  ## MEAN PLS
+  # x_mean <- data$X
+  # mus_x <- colMeans(x_mean,na.rm = T)
+  # idNA <- which(is.na(data$X),arr.ind = T)
+  # idNAii <- which(is.na(data$X),arr.ind = F)
+  # x_mean[idNAii] <- mus_x[idNA[,2]]
+  # models <- MI_PLS(x_mean,data$Y,R=R_max,M=1,proper = F,errMin = errMin)
+  # est <- list(est=predict_MI_PLS(models,data_test$X))
+  # R_pred[[i]] <- lapply(models,function(mm){mm$R})
+  
+  # ## I PLS
+  # models <- MI_PLS(data$X,data$Y,R=R_max,M=1,proper=F,errMin=errMin)
+  # est <- list(est=predict_MI_PLS(models,data_test$X))
+  # R_pred[[i]] <- lapply(models,function(mm){mm$R})
+  
+  rmseStdS[i,] <- sqrt(colMeans((est$est-data_test$Y)^2))/apply(data_test$Y,2,sd)
+  
+  df <- data.frame(list(th=rep(paras[,1],q),y_j=unlist(lapply(1:q,function(jj){rep(paste("y",jj),length(paras[,1]))})),rmseSTD=as.vector(rmseStdS)))
+  # par(mfrow=c(1,3))
+  boxplot(rmseSTD~th,df[which(df$y_j=="y 1"),])
+  # boxplot(rmseSTD~th,df[which(df$y_j=="y 2"),])
+  # boxplot(rmseSTD~th,df[which(df$y_j=="y 3"),])
+}
+
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ddsPLS2)
+source("functions0.R")
+source('~/Documents/GitHub/Koh_Lanta/kohLanta2_fun.R')
+source('~/Documents/GitHub/Koh_Lanta/MI_PLS.R')
+
+## Koh-Lanta
+load("../data/Simus/KohLantaVSNipals/Design1/ddsPLS_MNAR.RData")
+# save(df,sel_Y,R_pred,rmseStdS,paras,file="../data/Simus/KohLantaVSNipals/Design1/ddsPLS_MNAR.RData")
+ddspls_1_df1 <- cbind("ddsPLS",df)
+names(ddspls_1_df1) <- c("method",names(df))
+# load("../data/Simus/KohLantaVSNipals/Design1/ddsPLS_MNAR2.RData")
+# # save(df,sel_Y,R_pred,rmseStdS,paras,file="../data/Simus/KohLantaVSNipals/Design1/ddsPLS_MNAR2.RData")
+# ddspls_1_df2 <- cbind("ddsPLS",df)
+# names(ddspls_1_df2) <- c("method",names(df))
+ddspls_1_df <- rbind(ddspls_1_df1)#,ddspls_1_df2)
+
+## MULTIPLE IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS_MNAR.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/MI_NIPALS_MNAR.RData")
+miPLS_1_df1 <- data.frame(cbind("MI-NIPALS",df))
+names(miPLS_1_df1) <- c("method",names(df))
+miPLS_1_df <-  rbind(miPLS_1_df1)
+
+## MEAN IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS_MNAR.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS_MNAR.RData")
+meamPLS_1_df1 <- data.frame(cbind("MEAN-NIPALS",df))
+names(meamPLS_1_df1) <- c("method",names(df))
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS_MNAR2.RData")
+# load("../data/Simus/KohLantaVSNipals/Design1/MEAN_NIPALS_MNAR2.RData")
+# meamPLS_1_df2 <- data.frame(cbind("MEAN-NIPALS",df))
+# names(meamPLS_1_df2) <- c("method",names(df))
+meamPLS_1_df <- rbind(meamPLS_1_df1)#,meamPLS_1_df2)
+
+## SIMPLE IMP PLS
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS_MNAR.RData")
+load("../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS_MNAR.RData")
+pls_1_df1 <- data.frame(cbind("NIPALS",df))
+names(pls_1_df1) <- c("method",names(df))
+# save(df,R_pred,file="../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS_MNAR2.RData")
+# load("../data/Simus/KohLantaVSNipals/Design1/SIMPLE_NIPALS_MNAR2.RData")
+# pls_1_df2 <- data.frame(cbind("NIPALS",df))
+# names(pls_1_df2) <- c("method",names(df))
+pls_1_df <- rbind(pls_1_df1)#,pls_1_df2)
+
+all_1_df <- rbind(ddspls_1_df,miPLS_1_df,pls_1_df,meamPLS_1_df)
+all_1_df[,2] <- as.numeric(all_1_df[,2])
+all_1_df[,4] <- as.numeric(all_1_df[,4])
+cols <- RColorBrewer::brewer.pal(8,"Set1")
+cols[6] <- "brown"
+angle <- c(-45,45,90,-35)
+density <- c(30,35,40,45)
+
+source('~/Documents/GitHub/Koh_Lanta/plot_ddspls_nipals_1.R')
+
+```
+
+```{r,echo=F,fig.width=5,fig.height=1.5}
+postscript("~/Documents/GitHub/Koh_Lanta/nipasl_ddsPLS_1_MNAR.eps",
+           onefile=TRUE, horizontal=F,width=9, height=2.5,pointsize=3)
+plot_1_MNAR()
+dev.off()
+
+```
